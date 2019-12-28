@@ -1,0 +1,20 @@
+<div id="navigationBar">
+	<div id="logo">Chris Douglass | Portfolio</div>
+	<nav role="navigation">
+		<div id="nav">
+		  <ul class="mainMenu">
+		    <li><a href="/">Home</a></li>
+		    <li><a href="/projects">Projects</a></li>
+		    <li><a href="/misc">Miscellanea</a></li>
+		    <!-- <li><a href="/Resume">Resume</a></li> -->
+		    <!-- <li><a href="/contact">Contact</a></li> -->
+		  </ul>
+		  <ul class="rightMenu">
+		  	<% if(currentUser){ %>
+		  	<li><a href="/projects/new">+New</a></li>
+		  	<li><a href="/logout">Logout</a></li>
+		  	<% } %>
+		  </ul>
+		</div>
+	</nav>
+</div>

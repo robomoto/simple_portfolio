@@ -1,0 +1,45 @@
+<% include partials/header %>
+<% include partials/nav %>
+<% if(project.length > 0){ %>
+<div class="projectSummary">
+    <div class="projectHeader">
+        <div class="projectName">
+            <%- project[0].name %>
+        </div>
+    <% if(project[0].link){ %>
+        <div class="gitLink">
+            <a href="<%- project[0].link%>">Source Link</a>
+        </div>
+    <% } %>
+    </div>
+    <div>
+        <%- project[0].created %>
+    </div>
+    <div class="description">
+        <%- project[0].description %>
+    </div>
+    <div>
+        <%- project[0].category %>
+    </div>
+    <div class="tags">Tag List: 
+        <%- project[0].tags %>
+    </div>
+    
+    <div class="edits">
+        <div class="editButton">
+            <form action="/projects/<%- project[0]._id %>/edit" method="GET">
+                <button>Edit</button>
+            </form>
+        </div>
+        <div class="delButton">
+            <form action="/projects/<%- project[0]._id %>?_method=DELETE" method="POST">
+                <button>Delete</button>
+            </form>
+        </div>
+    </div>
+    
+</div>
+<% } else { %>
+    <h3>Project Not Found</h3>
+<% }%>
+<% include partials/footer %>

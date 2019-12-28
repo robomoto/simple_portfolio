@@ -1,0 +1,22 @@
+<% include partials/header %>
+<% include partials/nav %>
+
+<% for(var i = 0; i < projects.length; i++){ %>
+
+<div class="projectSummary">
+    <div class="projectHeader">
+        <div class="projectName">
+            <a href="/projects/<%-projects[i]._id%>"><%- projects[i].name%></a>
+        </div>
+        <div class="tags">
+            <%- projects[i].tags %>
+        </div>    
+    </div>
+    <div class="shortDesc">
+        <%- projects[i].shortDesc%>
+    </div>
+    
+</div>
+       
+<% } %>
+<% include partials/footer %>
