@@ -140,14 +140,14 @@ router.get("/projects", function(req, res){
 //====================================
 //NEW       /projects/new       GET
 //====================================
-router.get("/projects/new", isLoggedIn, function(req, res){
+router.get("/projects/new", isLoggedIn, isAdmin, function(req, res){
     res.render("new");
 });
 
 //====================================
 //CREATE    /projects           POST
 //====================================
-router.post("/projects", isLoggedIn, function(req, res){
+router.post("/projects", isLoggedIn, isAdmin, function(req, res){
     var newProject = req.body.Project;
     Project.create(newProject, function(err, newlyCreated){
         if(err){
@@ -165,14 +165,16 @@ router.get("/projects/:id", function(req, res){
     Project.find({_id: req.params.id}, function(err, project){
         if(err){
             console.log(err);
+        } else if(req.isAuthenticated() && res.locals.currentUser.role == "admin"){
+            //admin logged in
+            res.render("adminProject", {project:project});
+        } else if(req.isAuthenticated() && res.locals.currentUser.role == "guest"){
+            //admin logged in
+            res.render("showProject", {project:project});
+        } else if(project[0].display == 'public'){
+            res.render("showProject", {project:project});
         } else {
-                //admin logged in
-            if(req.isAuthenticated() && res.locals.currentUser.role == "admin"){
-                res.render("adminProject", {project:project});
-            } else {
-                //admin logged in
-                res.render("showProject", {project:project});
-            }
+            res.send('User does not have permission for this action.')
         }
     });
 });
@@ -180,7 +182,7 @@ router.get("/projects/:id", function(req, res){
 //====================================
 //EDIT      /projects/:id/edit  GET
 //====================================
-router.get("/projects/:id/edit", isLoggedIn, function(req, res){
+router.get("/projects/:id/edit", isLoggedIn, isAdmin, function(req, res){
     Project.find({_id: req.params.id}, function(err, project){
         if(err){
             console.log(err);
@@ -193,7 +195,7 @@ router.get("/projects/:id/edit", isLoggedIn, function(req, res){
 //====================================
 //UPDATE    /projects/:id       PUT
 //====================================
-router.put("/projects/:id", function(req, res){
+router.put("/projects/:id", isLoggedIn, isAdmin, function(req, res){
     Project.findByIdAndUpdate({_id: req.params.id}, req.body.Project, function(err, project){
         if(err){
             console.log(err);
@@ -207,7 +209,7 @@ router.put("/projects/:id", function(req, res){
 //====================================
 //DESTROY   /projects/:id       DELETE
 //====================================
-router.delete("/projects/:id", isLoggedIn, function(req, res){
+router.delete("/projects/:id", isLoggedIn, isAdmin, function(req, res){
     Project.findByIdAndRemove({_id: req.params.id}, function(err, project){
         if(err){
             console.log(err);
