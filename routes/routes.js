@@ -4,6 +4,12 @@ var passport = require("passport");
 var Project = require("../models/project");
 var User = require("../models/user");
 
+//middleware to put current user info on all routes.
+router.use(function(req, res, next){
+    res.locals.currentUser = req.user;
+    next();
+});
+
 router.get("/", function(req, res){
     res.redirect("/index");
 });
@@ -25,7 +31,7 @@ router.get("/", function(req, res){
 router.get("/index", function(req, res){
        //Get all projects from DB
        //admin logged in
-    if(req.isAuthenticated()){  
+    if(req.isAuthenticated() && res.locals.currentUser.role == "admin"){  
         Project.find({category: 'blog'}, function(err, projects){
         if(err){
             console.log(err);
@@ -34,9 +40,19 @@ router.get("/index", function(req, res){
             res.render("projects", {projects:projects})
         }
         });
+        //guest
+    } else if(req.isAuthenticated() && res.locals.currentUser.role == "guest") {             
+        Project.find({category: 'blog', isPublished: true}, function(err, projects){
+        if(err){
+            console.log(err);
+        } else {
+            console.log(projects);
+            res.render("projects", {projects:projects})
+        }
+        });    
         //no login
     } else {            
-        Project.find({category: 'blog', isPublished: true}, function(err, projects){
+        Project.find({category: 'blog', display: "public", isPublished: true}, function(err, projects){
         if(err){
             console.log(err);
         } else {
@@ -53,8 +69,17 @@ router.get("/index", function(req, res){
 router.get("/misc", function(req, res){
        //Get all projects from DB
        //admin logged in
-    if(req.isAuthenticated()){
+    if(req.isAuthenticated() && res.locals.currentUser.role == "admin"){
         Project.find({category: 'misc'}, function(err, projects){
+        if(err){
+            console.log(err);
+        } else {
+            console.log(projects);
+            res.render("projects", {projects:projects})
+        }
+        });
+    } else if(req.isAuthenticated() && res.locals.currentUser.role == "guest") {
+        Project.find({category: 'misc', isPublished: true}, function(err, projects){
         if(err){
             console.log(err);
         } else {
@@ -64,7 +89,7 @@ router.get("/misc", function(req, res){
         });
     } else {
         //no login
-        Project.find({category: 'misc', isPublished: true}, function(err, projects){
+        Project.find({category: 'misc', display: 'public', isPublished: true}, function(err, projects){
         if(err){
             console.log(err);
         } else {
@@ -81,8 +106,17 @@ router.get("/misc", function(req, res){
 router.get("/projects", function(req, res){
     //Get all projects from DB
     //admin logged in
-    if(req.isAuthenticated()){
+    if(req.isAuthenticated() && res.locals.currentUser.role == "admin"){
         Project.find({category: 'project'}, function(err, projects){
+        if(err){
+            console.log(err);
+        } else {
+            console.log(projects);
+            res.render("projects", {projects:projects})
+        }
+        });
+    } else if(req.isAuthenticated() && res.locals.currentUser.role == "guest") {
+        Project.find({category: 'project', isPublished: true}, function(err, projects){
         if(err){
             console.log(err);
         } else {
@@ -92,7 +126,7 @@ router.get("/projects", function(req, res){
         });
     } else {
         //no login
-        Project.find({category: 'project', isPublished: true}, function(err, projects){
+        Project.find({category: 'project', display: 'public', isPublished: true}, function(err, projects){
         if(err){
             console.log(err);
         } else {
@@ -133,7 +167,7 @@ router.get("/projects/:id", function(req, res){
             console.log(err);
         } else {
                 //admin logged in
-            if(req.isAuthenticated()){
+            if(req.isAuthenticated() && res.locals.currentUser.role == "admin"){
                 res.render("adminProject", {project:project});
             } else {
                 //admin logged in
@@ -160,7 +194,7 @@ router.get("/projects/:id/edit", isLoggedIn, function(req, res){
 //UPDATE    /projects/:id       PUT
 //====================================
 router.put("/projects/:id", function(req, res){
-    Project.findByIdAndUpdate({_id: req.params.id}, req.body.project, function(err, project){
+    Project.findByIdAndUpdate({_id: req.params.id}, req.body.Project, function(err, project){
         if(err){
             console.log(err);
             res.redirect("/projects");
@@ -189,25 +223,25 @@ router.delete("/projects/:id", isLoggedIn, function(req, res){
 //USER LOGIN INFORMATION
 //====================================
 
-// //show register form
-// router.get("/register", function(req, res){
-//     res.render("register");
-// })
+//show register form
+router.get("/register", function(req, res){
+    res.render("register");
+})
 
-// //handle sign up logic
-// router.post("/register", function(req, res){
-//     var newUser = new User({username: req.body.username});
-//     User.register(newUser.toLowerCase(), req.body.password,function(err, user){
-//         if(err){
-//             console.log(err);
-//             return res.render("register")
-//         } else {
-//         passport.authenticate("local")(req, res, function(){
-//             res.redirect("/");
-//         });
-//         }
-//     });
-// });
+//handle sign up logic
+router.post("/register", function(req, res){
+    var newUser = new User({username: req.body.username});
+    User.register(newUser, req.body.password,function(err, user){
+        if(err){
+            console.log(err);
+            return res.render("register")
+        } else {
+        passport.authenticate("local")(req, res, function(){
+            res.redirect("/");
+        });
+        }
+    });
+});
 
 //show login form
 router.get("/login", function(req, res){
@@ -232,7 +266,17 @@ function isLoggedIn(req, res, next){
     if(req.isAuthenticated()){
         return next();
     } else {
+        console.log("attempting task that requires login.")
         res.redirect("/login");
+    }
+}
+
+function isAdmin(req, res, next){
+    if(res.locals.currentUser.role == "admin"){
+        return next();
+    } else {
+        console.log("Non-Admin attempting admin task.")
+        res.redirect("/index");
     }
 }
 

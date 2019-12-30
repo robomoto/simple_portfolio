@@ -3,21 +3,25 @@
 
 <form action="/projects/<%- project[0]._id%>?_method=PUT" method="POST">
     <label>Content Type:
-        <select name="category">
-           <option value="project" <% if(project[0].category == 'project'){ %>selected<% } %> >Project</option>
-           <option value="misc" <% if(project[0].category == 'misc'){ %>selected<% } %> >Misc</option>
-           <option value="blog" <% if(project[0].category == 'blog'){ %>selected<% } %> >Blog</option>
+        <select name="Project[category]">
+           <option value="project" <% if(project[0].category === 'project'){ %>selected<% } %> >Project</option>
+           <option value="misc" <% if(project[0].category === 'misc'){ %>selected<% } %> >Misc</option>
+           <option value="blog" <% if(project[0].category === 'blog'){ %>selected<% } %> >Blog</option>
         </select>
     </label>
-    <label>Publish: <select name="isPublished">
-        <option value="false" <% if(!project[0].isPublished){ %> selected <% } %> >Private</option>
-        <option value="true" <% if(project[0].isPublished){ %> selected <% } %> >Public</option>
+    <label>Display: <select name="Project[display]">
+        <option value="private" <% if(project[0].display === 'private'){ %> selected <% } %> >Private</option>
+        <option value="public" <% if(project[0].display === 'public'){ %> selected <% } %> >Public</option>
+    </select></label>
+    <label>Publish: <select name="Project[isPublished]">
+        <option value="false" <% if(!project[0].isPublished){ %> selected <% } %> >UnPublished</option>
+        <option value="true" <% if(project[0].isPublished){ %> selected <% } %> >Published</option>
     </select> <br></label>
-    <label>Project Name:<br> <input type="text" name="project[name]" value="<%- project[0].name %>"><br> </label>
-    <label>Source Link:<br> <input type="text" name="project[link]" value="<%- project[0].link %>"><br></label>
-    <label>Short Description:<br> <input type="text" name="project[shortDesc]" value="<%- project[0].shortDesc %>"><br></label>
-    <label>Description:<br> <textarea name="project[description]"><%- project[0].description %></textarea><br></label>
-    <label>Tags:<br> <input type="text" name="project[tags]" value="<%- project[0].tags %>"><br></label>
+    <label>Project Name:<br> <input type="text" name="Project[name]" value="<%- project[0].name %>"><br> </label>
+    <label>Source Link:<br> <input type="text" name="Project[link]" value="<%- project[0].link %>"><br></label>
+    <label>Short Description:<br> <input type="text" name="Project[shortDesc]" value="<%- project[0].shortDesc %>"><br></label>
+    <label>Description:<br> <textarea name="Project[description]"><%- project[0].description %></textarea><br></label>
+    <label>Tags:<br> <input type="text" name="Project[tags]" value="<%- project[0].tags %>"><br></label>
     <input type="submit" name="submit" value="submit">
 
 </form>

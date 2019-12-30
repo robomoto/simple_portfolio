@@ -8,7 +8,8 @@ var projectSchema = new mongoose.Schema({
     description: String,
     tags: [String],
     created: Date,
-    category: String,
+    category: String, //blog, project, misc
+    display: {type: String, default: "private"}, //public, private
     isPublished: {type: Boolean, default: false}
 });
 
